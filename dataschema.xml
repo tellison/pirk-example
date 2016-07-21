@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema xmlns="http://pirk.apache.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pirk.apache.org data-schema.xsd">
+
+    <schemaName>Simple Data</schemaName>
+    <element>
+        <name>name</name>
+        <type>string</type>
+        <isArray>false</isArray>
+    </element>
+
+    <element>
+        <name>age</name>
+        <type>int</type>
+        <isArray>false</isArray>
+    </element>
+
+    <element>
+        <name>children</name>
+        <type>string</type>
+        <isArray>true</isArray>
+    </element>
+</schema>

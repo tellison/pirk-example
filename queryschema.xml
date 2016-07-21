@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema xmlns="http://pirk.apache.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pirk.apache.org query-schema.xsd">
+
+    <schemaName>simple query</schemaName>
+    <dataSchemaName>Simple Data</dataSchemaName>
+    <selectorName>name</selectorName>
+    <elements>
+        <name>name</name>
+        <name>age</name>
+    </elements>
+</schema>
