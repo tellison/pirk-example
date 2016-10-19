@@ -7,7 +7,7 @@
     <element>
         <name>name</name>
         <type>string</type>
-        <isArray>false</isArray>
+        <isArray/>
     </element>
 
     <element>
