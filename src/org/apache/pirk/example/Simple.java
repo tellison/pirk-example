@@ -30,6 +30,7 @@ import com.google.gson.GsonBuilder;
 
 public class Simple {
 
+    // Characteristics of our query encryption.
     private static int hashBitSize = 12;
     private static String hashKey = "my key";
     private static int dataPartitionBitSize = 8;
@@ -52,7 +53,8 @@ public class Simple {
             DataSchemaRegistry.put(new DataSchemaLoader().loadSchema(is));
         }
 
-        // This is the definition for the type of query.
+        // This is the definition for the type of query. Look in the the
+        // queryschema.xml file, and see we are requesting the name and age.
         String queryType = null;
         try (InputStream is = new FileInputStream("queryschema.xml")) {
             QuerySchema qs = new QuerySchemaLoader().loadSchema(is);
@@ -93,7 +95,7 @@ public class Simple {
         debug(response, "response.json");
 
         /* Step 3: The encrypted response is sent back to the querier. */
-        
+
         // Decrypt the response using the information in our querier object.
         DecryptResponse decryptResponse = new DecryptResponse(response, querier);
         Map<String, List<QueryResponseJSON>> results = decryptResponse.decrypt();
