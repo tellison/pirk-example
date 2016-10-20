@@ -40,16 +40,19 @@ public class Simple {
 
     public static void main(String[] args) throws Exception {
 
-        /* The querier */
-        
+        /* Step 1: The querier builds an encrypted query. */
+
+        // These are the search terms.
         ArrayList<String> selectors = new ArrayList<String>();
         selectors.add("Bob");
         selectors.add("Sam");
 
+        // This is the data schema we will be querying over.
         try (InputStream is = new FileInputStream("dataschema.xml")) {
             DataSchemaRegistry.put(new DataSchemaLoader().loadSchema(is));
         }
-        
+
+        // This is the definition for the type of query.
         String queryType = null;
         try (InputStream is = new FileInputStream("queryschema.xml")) {
             QuerySchema qs = new QuerySchemaLoader().loadSchema(is);
@@ -57,36 +60,41 @@ public class Simple {
             QuerySchemaRegistry.put(qs);
         }
 
-        // Create the query & querier
-        QueryInfo queryInfo = new QueryInfo(selectors.size(), hashBitSize, hashKey, dataPartitionBitSize,
-                queryType, false, false, false);
+        // Create the base query info, and Paillier encryption definitions.
+        QueryInfo queryInfo = new QueryInfo(selectors.size(), hashBitSize, hashKey, dataPartitionBitSize, queryType,
+                false, false, false);
 
         Paillier paillier = new Paillier(paillierBitSize, certainty);
 
-        // The querier is kept secret by us in order to decrypt the results.
+        // The /querier/ is kept secret by us in order to decrypt the results.
         Querier querier = new EncryptQuery(queryInfo, selectors, paillier).encrypt();
-
-        // The query is sent to the responder to perform the search.
-        Query query = querier.getQuery();
-
         debug(querier, "querier.json");
+
+        // The encrypted /query/ is sent to the responder to perform the search.
+        Query query = querier.getQuery();
         debug(query, "query.json");
 
-        // Assume we have passed the query to the responder to run...
-        
-        /* The responder, upon receiving the query. */
+        /* Step 2: Assume we have passed the query to the responder to run. */
+
+        // The responder receives the encrypted query.
         Responder responder = new Responder(query);
-        
-        // The input data and output file.
+
+        // Here we define the input data to load into memory, and the location
+        // for storing results, though in general this would likely be a
+        // reference to a big data set.
         SystemConfiguration.setProperty("pir.inputData", "datafile.json");
         SystemConfiguration.setProperty("pir.outputFile", "resultfile.ser");
+
+        // Run the encrypted query to produce a response.
         responder.computeStandaloneResponse();
 
         // The response is still encrypted at this point.
         Response response = responder.getResponse();
         debug(response, "response.json");
 
-        // Decrypt the response
+        /* Step 3: The encrypted response is sent back to the querier. */
+        
+        // Decrypt the response using the information in our querier object.
         DecryptResponse decryptResponse = new DecryptResponse(response, querier);
         Map<String, List<QueryResponseJSON>> results = decryptResponse.decrypt();
 
@@ -95,6 +103,9 @@ public class Simple {
         System.out.println("Finished");
     }
 
+    /*
+     * Helper to store objects in a file in JSON format.
+     */
     private static void debug(Object obj, String fileName) throws IOException {
         (new File("debug")).mkdir();
         System.out.println("dumping " + obj);
