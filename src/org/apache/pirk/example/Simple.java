@@ -32,7 +32,6 @@ public class Simple {
 
     // Characteristics of our query encryption.
     private static int hashBitSize = 12;
-    private static String hashKey = "my key";
     private static int dataPartitionBitSize = 8;
     private static int paillierBitSize = 384;
     private static int certainty = 128;
@@ -63,7 +62,7 @@ public class Simple {
         }
 
         // Create the base query info, and Paillier encryption definitions.
-        QueryInfo queryInfo = new QueryInfo(selectors.size(), hashBitSize, hashKey, dataPartitionBitSize, queryType,
+        QueryInfo queryInfo = new QueryInfo(selectors.size(), hashBitSize, dataPartitionBitSize, queryType,
                 false, false, false);
 
         Paillier paillier = new Paillier(paillierBitSize, certainty);
